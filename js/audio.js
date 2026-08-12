@@ -65,7 +65,7 @@
       try{
         const def=SITE.songs&&SITE.songs.xue;
         if(!def||this.preloaded) return;
-        const a=new Audio("assets/music/"+def.file);
+        const a=new Audio((SITE.assetsBase||"assets/")+"music/"+def.file);
         a.preload="auto"; a.volume=.72;
         this.preloaded=a; this.preloadedKey="xue";
         a.load();
@@ -84,7 +84,7 @@
         audioEl.loop=true;
         audioEl.play().catch(()=>{});
       } else {
-        audioEl=new Audio("assets/music/"+song.file);
+        audioEl=new Audio((SITE.assetsBase||"assets/")+"music/"+song.file);
         audioEl.loop=true; audioEl.volume=.72;
         audioEl.preload="auto";
         audioEl.play().catch(()=>{});

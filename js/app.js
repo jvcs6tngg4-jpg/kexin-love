@@ -101,19 +101,18 @@
     btnNo.style.transform="translate("+Math.max(8,Math.min(vw-w-8,x))+"px,"+Math.max(safeTop,Math.min(vh-h-8,y))+"px) scale("+scale+")";
     noEscapes++;
     pixelMsg.textContent=ESCAPES[Math.min(noEscapes-1,ESCAPES.length-1)];
-    if(noEscapes>=7){ btnNo.textContent="愿 意"; btnNo.classList.add("pixel-yes"); btnNo.classList.remove("pixel-no"); }
   }
-  /* 惊慌乱跑：碰到后连续高速移动，不消失、点不到 */
+  /* 惊慌乱跑：碰到后连续高速移动，永不消失、永远点不到 */
   let panicTimer=null;
   function panicRun(){
-    if(noEscapes>=7||btnYes.disabled) return;
+    if(btnYes.disabled) return;
     fleeNo();
     if(panicTimer) clearInterval(panicTimer);
     panicTimer=setInterval(()=>{
-      if(noEscapes>=7||btnYes.disabled){ clearInterval(panicTimer); return; }
+      if(btnYes.disabled){ clearInterval(panicTimer); return; }
       fleeNo();
-    },250);
-    setTimeout(()=>{ if(panicTimer) clearInterval(panicTimer); },2600);
+    },220);
+    setTimeout(()=>{ if(panicTimer) clearInterval(panicTimer); },5200);
   }
   /* 光标追着它跑，它就躲 */
   document.addEventListener("pointermove",e=>{
@@ -127,7 +126,8 @@
   },{passive:true});
   btnNo.addEventListener("mouseenter",()=>{ lastDodge=Date.now(); panicRun(); });
   btnNo.addEventListener("touchstart",e=>{ e.preventDefault(); lastDodge=Date.now(); panicRun(); },{passive:false});
-  btnNo.addEventListener("click",e=>{ e.preventDefault(); if(noEscapes>=7){ btnYes.click(); return; } panicRun(); });
+  btnNo.addEventListener("pointerdown",e=>{ e.preventDefault(); lastDodge=Date.now(); panicRun(); },{passive:false});
+  btnNo.addEventListener("click",e=>{ e.preventDefault(); panicRun(); });
   btnYes.addEventListener("click",()=>{
     if(window.PIXELFX&&window.PIXELFX.burst) window.PIXELFX.burst(34);
     if(window.Sfx) window.Sfx.chime();
@@ -226,7 +226,7 @@
     btnNo.textContent="不 愿 意";
     btnNo.style.position=""; btnNo.style.left=""; btnNo.style.top=""; btnNo.style.transform="";
     btnNo.style.willChange=""; delete btnNo.dataset.anchored;
-    pixelMsg.textContent="";
+    noEscapes=0; pixelMsg.textContent="";
     if(window.Sfx) window.Sfx.click();
     goTo("pixel",true);
   });
@@ -245,7 +245,7 @@
     el.setAttribute("preload","metadata");
     /* 封面图（有则显示，避免空黑屏） */
     const base=path.replace(/\.[a-z0-9]+$/i,"");
-    const poster="assets/photos/"+base.split("/").pop()+".poster.jpg";
+    const poster=(SITE.assetsBase||"assets/")+"photos/"+base.split("/").pop()+".poster.jpg";
     const hasPoster = SITE.media && Object.keys(SITE.media).some(k=>SITE.media[k] && path.indexOf(SITE.media[k])>=0);
     el.poster=poster;
     el.src=path;
@@ -297,8 +297,8 @@
     Object.keys(media).forEach(key=>{
       const src=media[key]; if(!src) return;
       const slot=$('[data-slot="'+key+'"]'); if(!slot) return;
-      const folder=isVideoFile(src)?"assets/videos/":"assets/photos/";
-      const path=src.indexOf("/")>=0?src:folder+src;
+      const base=(SITE.assetsBase||"assets/");
+      const path=src.indexOf("http")>=0?src:base+(isVideoFile(src)?"videos/":"photos/")+src;
       if(isVideoFile(src)) makeVideo(slot,path);
       else{
         const el=document.createElement("img"); el.src=path; el.alt=key;

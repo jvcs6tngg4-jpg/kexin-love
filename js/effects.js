@@ -345,8 +345,9 @@
         v.setAttribute("x5-playsinline",""); v.setAttribute("x5-video-player-type","h5");
         v.setAttribute("disablePictureInPicture","");
         v.setAttribute("preload","metadata");
-        v.poster="assets/photos/"+s.src.replace(/\.[a-z0-9]+$/i,"")+".poster.jpg";
-        v.src="assets/videos/"+s.src;
+        const ab=SITE.assetsBase||"assets/";
+        v.poster=ab+"photos/"+s.src.replace(/\.[a-z0-9]+$/i,"")+".poster.jpg";
+        v.src=ab+"videos/"+s.src;
         d.appendChild(v);
         const sb=document.createElement("button");
         sb.className="slide-sound"; sb.textContent="🔇";
@@ -366,7 +367,7 @@
         d.appendChild(sb);
       } else {
         const im=document.createElement("img");
-        im.src="assets/photos/"+s.src; im.alt=s.cap||"";
+        im.src=(SITE.assetsBase||"assets/")+"photos/"+s.src; im.alt=s.cap||"";
         d.appendChild(im);
       }
       stage.appendChild(d);
