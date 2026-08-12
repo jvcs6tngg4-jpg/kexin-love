@@ -11,7 +11,7 @@
   const starsCv = document.getElementById("stars"), dustCv = document.getElementById("dust");
   const sctx = starsCv.getContext("2d"), dctx = dustCv.getContext("2d");
   let W=0,H=0,stars=[],dust=[],shoot=[],px=-9999,py=-9999;
-  const DPR = Math.min(2, window.devicePixelRatio || 1);
+  const DPR = Math.min(window.innerWidth<768?1.5:2, window.devicePixelRatio || 1);
   function resizeSky(){
     W=window.innerWidth; H=window.innerHeight;
     starsCv.width=dustCv.width=W*DPR; starsCv.height=dustCv.height=H*DPR;
@@ -19,14 +19,14 @@
     buildStars(); buildDust();
   }
   function buildStars(){
-    const count=Math.min(240,Math.floor(W*H/5200)); stars=[];
+    const count=Math.min(W<768?120:240,Math.floor(W*H/5200)); stars=[];
     for(let i=0;i<count;i++){
       const layer=Math.random();
       stars.push({x:Math.random()*W,y:Math.random()*H,r:layer<.55?.3+Math.random()*.5:(layer<.85?.5+Math.random()*.7:.9+Math.random()*1.2),a:.25+Math.random()*.6,tw:Math.random()*Math.PI*2,sp:.3+Math.random()*.9,layer});
     }
   }
   function buildDust(){
-    const count=Math.min(70,Math.floor(W*H/16000)); dust=[];
+    const count=Math.min(W<768?36:70,Math.floor(W*H/16000)); dust=[];
     for(let i=0;i<count;i++) dust.push({x:Math.random()*W,y:Math.random()*H,r:.6+Math.random()*1.8,vx:(Math.random()-.5)*.12,vy:-.04-Math.random()*.22,a:.08+Math.random()*.3,ph:Math.random()*Math.PI*2,sp:.5+Math.random()*1.6,gold:Math.random()<.7});
   }
   function tickSky(t){
@@ -368,6 +368,7 @@
       } else {
         const im=document.createElement("img");
         im.src=(SITE.assetsBase||"assets/")+"photos/"+s.src; im.alt=s.cap||"";
+        im.loading="lazy"; im.decoding="async";
         d.appendChild(im);
       }
       stage.appendChild(d);
