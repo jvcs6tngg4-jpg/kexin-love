@@ -20,7 +20,7 @@
 .pixel-yes{border-color:rgba(216,167,177,.85);color:#f4d9de;background:rgba(216,167,177,.08)}
 .pixel-yes:hover{background:rgba(216,167,177,.2);box-shadow:0 0 26px rgba(216,167,177,.4)}
 .pixel-no{border-color:rgba(242,233,216,.4);color:var(--text-dim);background:rgba(242,233,216,.04)}
-.pixel-no.fleeing{position:fixed;z-index:3100;margin:0}
+.pixel-no.fleeing{position:relative;z-index:3100;margin:0}
 .pixel-msg{margin-top:26px;font-size:12px;letter-spacing:.26em;color:var(--gold-soft);min-height:22px}
 
 /* ============ 第 1 幕 · 片头 ============ */
