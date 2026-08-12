@@ -16,7 +16,7 @@ const SITE = {
   startDate: "2025-10-05",       // 在一起的日子（天数自动计算）
 
   /* 媒体走 jsDelivr 国内高速 CDN（GitHub Pages 直连在国内太慢） */
-  assetsBase: "https://cdn.jsdelivr.net/gh/jvcs6tngg4-jpg/kexin-love@main/assets/",
+  assetsBase: "https://cdn.jsdelivr.net/gh/jvcs6tngg4-jpg/kexin-love@28fbbf7549a58d50c1dfce61ea8033d482c0ba66/assets/",
 
   /* ---------- 选歌（在开场白二选一） ----------
      两位歌手的歌，选谁播谁 */
