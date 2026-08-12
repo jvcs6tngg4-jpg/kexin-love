@@ -80,25 +80,23 @@
   const btnYes=$("#btnYes"), btnNo=$("#btnNo"), pixelMsg=$("#pixelMsg");
   const ESCAPES=["诶！别跑～","我在这儿呢～","抓不到我～","嘻嘻，再想想嘛","哎呀，不要躲啦","我跑我跑我跑～","好啦好啦，我知道你愿意的"];
   let lastDodge=0;
+  /* 记录原始布局位置（锚点）：用 transform 移动，不脱离布局，旁边的"愿意"纹丝不动 */
+  let noOrigin=null, noCur=null;
   function fleeNo(){
     const r=btnNo.getBoundingClientRect(), w=r.width||120, h=r.height||46;
     const vw=window.innerWidth, vh=window.innerHeight, safeTop=Math.max(70,window.scrollY||0);
+    if(!noOrigin){ noOrigin={x:r.left,y:r.top}; noCur={x:r.left,y:r.top}; }
     let x,y,tries=0;
-    /* 逃得远远的：至少离开当前/光标位置一大截 */
     do{ x=8+Math.random()*(vw-w-16); y=safeTop+Math.random()*(vh-h-24); tries++; }
-    while(tries<18 && Math.hypot(x+w/2-(r.left+r.width/2), y+h/2-(r.top+r.height/2)) < Math.min(vw,vh)*.38);
-    /* 锚点 + transform 移动（GPU 加速，手机上更顺滑） */
-    if(!btnNo.dataset.anchored){
-      btnNo.dataset.anchored="1";
-      btnNo.style.position="fixed";
-      btnNo.style.left="0px";
-      btnNo.style.top="0px";
-    }
+    while(tries<18 && Math.hypot(x+w/2-(noCur.x+w/2), y+h/2-(noCur.y+h/2)) < Math.min(vw,vh)*.36);
     btnNo.classList.add("fleeing");
-    btnNo.style.transition="transform .28s cubic-bezier(.3,1.4,.4,1)";
+    btnNo.style.transition="transform .3s cubic-bezier(.3,1.4,.4,1)";
     btnNo.style.willChange="transform";
-    const scale=noEscapes>5?Math.max(.7,1-(noEscapes-5)*.05):1;
-    btnNo.style.transform="translate("+Math.max(8,Math.min(vw-w-8,x))+"px,"+Math.max(safeTop,Math.min(vh-h-8,y))+"px) scale("+scale+")";
+    const scale=noEscapes>5?Math.max(.72,1-(noEscapes-5)*.05):1;
+    const dx=Math.max(8,Math.min(vw-w-8,x))-noOrigin.x;
+    const dy=Math.max(safeTop,Math.min(vh-h-8,y))-noOrigin.y;
+    btnNo.style.transform="translate("+dx+"px,"+dy+"px) scale("+scale+")";
+    noCur={x:Math.max(8,Math.min(vw-w-8,x)), y:Math.max(safeTop,Math.min(vh-h-8,y))};
     noEscapes++;
     pixelMsg.textContent=ESCAPES[Math.min(noEscapes-1,ESCAPES.length-1)];
   }
@@ -224,9 +222,8 @@
     btnNo.style.pointerEvents="";
     btnNo.classList.remove("fleeing","pixel-yes"); btnNo.classList.add("pixel-no");
     btnNo.textContent="不 愿 意";
-    btnNo.style.position=""; btnNo.style.left=""; btnNo.style.top=""; btnNo.style.transform="";
-    btnNo.style.willChange=""; delete btnNo.dataset.anchored;
-    noEscapes=0; pixelMsg.textContent="";
+    btnNo.style.transform=""; btnNo.style.willChange="";
+    noOrigin=null; noCur=null; noEscapes=0; pixelMsg.textContent="";
     if(window.Sfx) window.Sfx.click();
     goTo("pixel",true);
   });
